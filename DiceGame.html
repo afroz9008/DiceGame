@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Dice Game</title>
+    <style>
+    body{
+    background:black;
+}
+.player-0{
+    width: 400px;
+    height: 500px;
+    margin-top: 130px;
+    background:white;
+}
+.player-1{
+    width: 400px;
+    height: 500px;
+    margin-top: -500px;
+    margin-left: 400px;
+    color:gray;
+    background:wheat;
+}
+#newGame{
+    position: absolute;
+    margin-left: 310px;
+    background: transparent;
+    border: 1px solid black;
+    cursor: pointer;
+    width:200px;
+    font-size: 20px;
+   margin-top: 20px;
+}
+#newGame > #cancel{
+    width:22px;
+    height: 22px;
+    font-size: 19px;
+    position: absolute;
+    border: 1px solid red;
+    color:red;
+    border-radius: 50px;
+}
+#newGame:hover{
+    background: linear-gradient(90deg,white,wheat);
+    letter-spacing: 3px;
+}
+#playerName-0,#playerName-1{
+    font-size: 35px;
+    width:200px;
+    position: absolute;
+    margin-top: 100px;
+    margin-left: 150PX;
+}
+#playerScore-0,#playerScore-1{
+    position: absolute;
+    margin-top: 150px;
+    font-size: 35px;
+    color:red;
+    text-align: center;
+    margin-left: 157px;
+    width: 100px;
+}
+#current1,#current2{
+    position: absolute;
+    background: red;
+    font-size:25px;
+    width:100px;
+    height: 100px;
+    text-align: center;
+    margin-top: 330px;
+    margin-left: 157px;
+}
+#currentScore-0,#currentScore-1{
+    font-size: 30px;
+    margin-top: 15px;
+    color:white;
+}
+#btns{
+    position: absolute;
+    margin-top: -200px;
+    margin-left: 360px;
+}
+img{
+    position: absolute;
+    width:35px;
+    margin-top: -3px;
+    margin-left: -40px;
+    height: 30px;
+}
+#rollupBtn{
+    width:200px;
+    background: transparent;
+    height: 40px;
+    font-size: 20px;
+    margin-left: -55px;
+    text-align: center;
+    border: 1px solid green;
+    padding-left: 20px;
+    cursor: pointer;
+}
+#holdBtn{
+    width:200px;
+    background: transparent;
+    height: 40px;
+    font-size: 20px;
+    margin-left: -200px;
+    margin-top:70px;
+    text-align: center;
+    position: absolute;
+    border:1px solid red;
+    padding-left: 20px;
+    cursor: pointer;
+}
+#rollupBtn:hover,#holdBtn:hover{
+    letter-spacing: 5px;
+}
+#diceContainer{
+    width:100px;
+    height: 100px;
+    background: transparent;
+    position: absolute;
+    margin-top: -350px;
+    margin-left: 350px;
+}
+#dice{
+    width:100px;
+    height: 100px;
+    margin: 0;
+    box-shadow: 0px 0px 30px black;
+    display: none;
+}
+#active{
+    width: 400px;
+    height: 500px;
+    margin-top: -500px;
+    margin-left: 750px;
+    background:wheat;
+}
+button:focus{
+    outline: none;
+}
+    </style>
+</head>
+<body>
+    <button id="newGame">
+        <div id="cancel">+</div>New Game
+    </button>
+    <div id="player-0" class="player-0">
+        <div id="playerName-0">Player 1</div>
+        <div id="playerScore-0">0</div>
+        <div id="current1">Current
+            <div id="currentScore-0">0</div>
+        </div>
+    </div>
+    <div id="player-1" class="player-1">
+        <div id="playerName-1">Player 2</div>
+        <div id="playerScore-1">0</div>
+        <div id="current2">Current
+            <div id="currentScore-1">0</div>
+        </div>
+    </div>
+    <div id="btns">
+        <button id="rollupBtn"><img src="rollup.png">Roll Dice</button>
+        <button id="holdBtn"><img src="hold.png"> Hold</button>
+    </div>
+    <div id="diceContainer">
+        <img src="dice-1.png" id="dice">
+    </div>
+</body>
+<script>
+let scores, roundScore, activePlayer, playingGame;
+init();
+document.getElementById("playerScore-0").innerText = 0;
+document.getElementById("playerScore-1").innerText = 0;
+document.getElementById("rollupBtn").addEventListener('click', function () {
+    if (playingGame) {
+        let diceDOM = document.getElementById("dice");
+        let dice = Math.floor(Math.random() * 6) + 1;
+        diceDOM.src = "dice-" + dice + ".png";
+        diceDOM.style.display = "block";
+        if (dice !== 1) {
+            roundScore += dice;      document.getElementById("currentScore-" + activePlayer).innerText = roundScore;
+        }
+        else {
+            nextPlayer();
+        }
+    }
+});
+document.getElementById("holdBtn").addEventListener('click', function () {
+    if (playingGame) {
+        scores[activePlayer] += roundScore;     document.getElementById("playerScore-" + activePlayer).innerText = scores[activePlayer];
+        if (scores[activePlayer] > 10) {   
+    document.getElementById("playerName-" + activePlayer).style.color = "red";     document.getElementById("playerName-" + activePlayer).innerHTML = "<big><b>Winner ! </b></big>";          document.getElementById("dice").style.display = "none";
+            playingGame = false;
+        }
+        else {
+            nextPlayer();
+        }
+    }
+});
+function nextPlayer() {
+   document.getElementById("playerName-" + activePlayer).style.color = "gray";
+    document.getElementById("player-" + activePlayer).style.color = "gray";
+    activePlayer === 0 ? activePlayer = 1 : activePlayer = 0;
+    roundScore = 0; document.getElementById("currentScore-0").innerText = "0";   document.getElementById("currentScore-1").innerText = "0";    document.getElementById("playerName-" + activePlayer).style.color = "black";
+    document.getElementById("player-" + activePlayer).style.color = "black";    document.getElementById("dice").style.display = "none";
+    scores[activePlayer] += roundScore;
+   document.getElementById("playerScore-" + activePlayer).innerText = scores[activePlayer];
+}
+document.getElementById("newGame").addEventListener('click', init);
+function init() {
+    scores = [0, 0];
+    roundScore = 0;
+    activePlayer = 0;
+    playingGame = true;  document.getElementById("dice").style.display = "none";    document.getElementById("playerScore-0").innerText = 0; document.getElementById("playerScore-1").innerText = 0; document.getElementById("currentScore-0").innerText = 0;   document.getElementById("currentScore-1").innerText = 0;   document.getElementById("playerName-0").style.color = "black";  document.getElementById("player-0").style.color = "black";   document.getElementById("playerName-0").innerHTML = "Player 1";  document.getElementById("playerName-1").style.color = "gray";  document.getElementById("player-1").style.color = "gray"; document.getElementById("playerName-1").innerHTML = "Player 2";
+}
+</script>
+</html>
